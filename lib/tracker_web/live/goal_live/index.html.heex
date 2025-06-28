@@ -1,0 +1,43 @@
+<.header>
+  Listing Goals
+  <:actions>
+    <.link patch={~p"/goals/new"}>
+      <.button>New Goal</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="goals"
+  rows={@streams.goals}
+  row_click={fn {_id, goal} -> JS.navigate(~p"/goals/#{goal}") end}
+>
+  <:col :let={{_id, goal}} label="Description">{goal.description}</:col>
+  <:col :let={{_id, goal}} label="Type">{goal.type}</:col>
+  <:col :let={{_id, goal}} label="Numeric goal">{goal.numeric_target}</:col>
+  <:action :let={{_id, goal}}>
+    <div class="sr-only">
+      <.link navigate={~p"/goals/#{goal}"}>Show</.link>
+    </div>
+    <.link patch={~p"/goals/#{goal}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, goal}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: goal.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="goal-modal" show on_cancel={JS.patch(~p"/goals")}>
+  <.live_component
+    module={TrackerWeb.GoalLive.FormComponent}
+    id={@goal.id || :new}
+    title={@page_title}
+    action={@live_action}
+    goal={@goal}
+    patch={~p"/goals"}
+  />
+</.modal>
