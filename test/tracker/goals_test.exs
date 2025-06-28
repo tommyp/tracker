@@ -11,12 +11,12 @@ defmodule Tracker.GoalsTest do
     @invalid_attrs %{type: nil, description: nil, numeric_target: nil}
 
     test "list_goals/0 returns all goals" do
-      goal = goal_fixture()
+      goal = numeric_goal_fixture()
       assert Goals.list_goals() == [goal]
     end
 
     test "list_goals_with_entries_for_date/0 returns all goals" do
-      goal_1 = goal_fixture()
+      goal_1 = numeric_goal_fixture()
       date = Date.utc_today()
 
       {:ok, entry} =
@@ -25,13 +25,13 @@ defmodule Tracker.GoalsTest do
           completed: true
         })
 
-      goal_2 = goal_fixture()
+      goal_2 = numeric_goal_fixture()
 
       assert Goals.list_goals_with_entries_for_date(date) == [{goal_1, entry}, {goal_2, nil}]
     end
 
     test "get_goal!/1 returns the goal with given id" do
-      goal = goal_fixture()
+      goal = numeric_goal_fixture()
       assert Goals.get_goal!(goal.id) == goal
     end
 
@@ -91,7 +91,7 @@ defmodule Tracker.GoalsTest do
     end
 
     test "update_goal/2 with valid data updates the goal" do
-      goal = goal_fixture()
+      goal = numeric_goal_fixture()
 
       update_attrs = %{
         type: :boolean,
@@ -106,19 +106,19 @@ defmodule Tracker.GoalsTest do
     end
 
     test "update_goal/2 with invalid data returns error changeset" do
-      goal = goal_fixture()
+      goal = numeric_goal_fixture()
       assert {:error, %Ecto.Changeset{}} = Goals.update_goal(goal, @invalid_attrs)
       assert goal == Goals.get_goal!(goal.id)
     end
 
     test "delete_goal/1 deletes the goal" do
-      goal = goal_fixture()
+      goal = numeric_goal_fixture()
       assert {:ok, %Goal{}} = Goals.delete_goal(goal)
       assert_raise Ecto.NoResultsError, fn -> Goals.get_goal!(goal.id) end
     end
 
     test "change_goal/1 returns a goal changeset" do
-      goal = goal_fixture()
+      goal = numeric_goal_fixture()
       assert %Ecto.Changeset{} = Goals.change_goal(goal)
     end
   end

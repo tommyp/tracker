@@ -5,15 +5,27 @@ defmodule Tracker.GoalsFixtures do
   """
 
   @doc """
-  Generate a goal.
+  Generate a numeric goal.
   """
-  def goal_fixture(attrs \\ %{}) do
+  def numeric_goal_fixture(attrs \\ %{}) do
     {:ok, goal} =
       attrs
       |> Enum.into(%{
         description: "some description",
         numeric_target: 42,
         type: :numeric
+      })
+      |> Tracker.Goals.create_goal()
+
+    goal
+  end
+
+  def boolean_goal_fixture(attrs \\ %{}) do
+    {:ok, goal} =
+      attrs
+      |> Enum.into(%{
+        description: "some description",
+        type: :boolean
       })
       |> Tracker.Goals.create_goal()
 
