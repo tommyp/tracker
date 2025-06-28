@@ -35,15 +35,18 @@ defmodule Tracker.GoalsFixtures do
   @doc """
   Generate a goal_entry.
   """
-  def goal_entry_fixture(attrs \\ %{}) do
-    {:ok, goal_entry} =
+  def goal_entry_fixture(goal, attrs \\ %{}) do
+    attrs =
       attrs
       |> Enum.into(%{
         completed: true,
         count: 42,
         date: ~D[2025-06-27]
       })
-      |> Tracker.Goals.create_goal_entry()
+
+    {:ok, goal_entry} =
+      goal
+      |> Tracker.Goals.create_goal_entry(attrs)
 
     goal_entry
   end
