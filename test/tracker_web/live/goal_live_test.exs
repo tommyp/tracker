@@ -7,7 +7,8 @@ defmodule TrackerWeb.GoalLiveTest do
   @create_attrs %{type: :numeric, description: "some description", numeric_target: 42}
   @update_attrs %{
     type: :boolean,
-    description: "some updated description"
+    description: "some updated description",
+    numeric_target: nil
   }
   @invalid_attrs %{description: nil}
 

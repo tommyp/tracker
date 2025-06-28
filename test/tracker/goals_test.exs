@@ -20,13 +20,31 @@ defmodule Tracker.GoalsTest do
       assert Goals.get_goal!(goal.id) == goal
     end
 
-    test "create_goal/1 with valid data creates a goal" do
-      valid_attrs = %{type: :numeric, description: "some description", numeric_target: 42}
+    test "create_goal/1 can create a numeric goal" do
+      numeric_attrs = %{type: :numeric, description: "Do 42 pushups", numeric_target: 42}
 
-      assert {:ok, %Goal{} = goal} = Goals.create_goal(valid_attrs)
+      assert {:ok, %Goal{} = goal} = Goals.create_goal(numeric_attrs)
       assert goal.type == :numeric
-      assert goal.description == "some description"
+      assert goal.description == "Do 42 pushups"
       assert goal.numeric_target == 42
+    end
+
+    test "create_goal/1 can create a boolean goal" do
+      boolean_attrs = %{type: :boolean, description: "Go for a walk"}
+
+      assert {:ok, %Goal{} = goal} = Goals.create_goal(boolean_attrs)
+      assert goal.type == :boolean
+      assert goal.description == "Go for a walk"
+      assert goal.numeric_target == nil
+    end
+
+    test "create_goal/1 cannot create a boolean goal with a numeric target" do
+      invalid_attrs = %{type: :boolean, description: "Go for a 1km walk", numeric_target: 1000}
+
+      assert {:error, changeset} = Goals.create_goal(invalid_attrs)
+
+      assert changeset.errors ==
+               [type: {"A boolean goal cannot have a target", []}]
     end
 
     test "create_goal/1 with invalid data returns error changeset" do
@@ -39,13 +57,13 @@ defmodule Tracker.GoalsTest do
       update_attrs = %{
         type: :boolean,
         description: "some updated description",
-        numeric_target: 43
+        numeric_target: nil
       }
 
       assert {:ok, %Goal{} = goal} = Goals.update_goal(goal, update_attrs)
       assert goal.type == :boolean
       assert goal.description == "some updated description"
-      assert goal.numeric_target == 43
+      assert goal.numeric_target == nil
     end
 
     test "update_goal/2 with invalid data returns error changeset" do
