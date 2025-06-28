@@ -18,6 +18,7 @@ defmodule Tracker.Goals.Goal do
     |> cast(attrs, [:description, :type, :numeric_target])
     |> validate_required([:description, :type])
     |> validate_boolean_type_has_no_target()
+    |> validate_numeric_target_greater_than_0()
   end
 
   defp validate_boolean_type_has_no_target(changeset) do
@@ -31,6 +32,16 @@ defmodule Tracker.Goals.Goal do
       else
         add_error(changeset, :type, "A boolean goal cannot have a target")
       end
+    else
+      changeset
+    end
+  end
+
+  defp validate_numeric_target_greater_than_0(changeset) do
+    type = get_field(changeset, :type)
+
+    if type == :numeric do
+      validate_number(changeset, :numeric_target, greater_than: 0)
     else
       changeset
     end
