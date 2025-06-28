@@ -13,7 +13,7 @@ defmodule TrackerWeb.GoalLiveTest do
   @invalid_attrs %{description: nil}
 
   defp create_goal(_) do
-    goal = goal_fixture()
+    goal = numeric_goal_fixture()
     %{goal: goal}
   end
 
