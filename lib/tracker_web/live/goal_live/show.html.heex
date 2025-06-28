@@ -1,0 +1,28 @@
+<.header>
+  Goal {@goal.id}
+  <:subtitle>This is a goal record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/goals/#{@goal}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit goal</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Description">{@goal.description}</:item>
+  <:item title="Type">{@goal.type}</:item>
+  <:item title="Numeric goal">{@goal.numeric_target}</:item>
+</.list>
+
+<.back navigate={~p"/goals"}>Back to goals</.back>
+
+<.modal :if={@live_action == :edit} id="goal-modal" show on_cancel={JS.patch(~p"/goals/#{@goal}")}>
+  <.live_component
+    module={TrackerWeb.GoalLive.FormComponent}
+    id={@goal.id}
+    title={@page_title}
+    action={@live_action}
+    goal={@goal}
+    patch={~p"/goals/#{@goal}"}
+  />
+</.modal>
