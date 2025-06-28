@@ -2,12 +2,16 @@ defmodule Tracker.Goals.Goal do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Tracker.Goals.GoalEntry
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "goals" do
     field :type, Ecto.Enum, values: [:numeric, :boolean]
     field :description, :string
     field :numeric_target, :integer
+
+    has_many :entries, GoalEntry
 
     timestamps(type: :utc_datetime)
   end
