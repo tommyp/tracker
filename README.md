@@ -1,18 +1,27 @@
-# Tracker
+# Tracker ✅
 
-To start your Phoenix server:
+## Installation ⚙️
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+```
+mix deps.get
+mix ecto.setup
+```
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## Running the application 🚀
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+```
+mix phx.server
+```
 
-## Learn more
+And then visit [localhost:4000](http://localhost:4000)
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+## TODO 🚧
+
+- ~add goals~
+- browse by day
+- log a boolean goal as completed
+- log progress against a numeric goal
+- edit progress of goals
+- reports on recent goal progress
+- weekly average report on goals
+- parse goal description for numeric target
