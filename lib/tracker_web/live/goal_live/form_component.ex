@@ -1,5 +1,4 @@
 defmodule TrackerWeb.GoalLive.FormComponent do
-  alias Tracker.Goals.Goal
   use TrackerWeb, :live_component
 
   alias Tracker.Goals
@@ -10,7 +9,6 @@ defmodule TrackerWeb.GoalLive.FormComponent do
     <div>
       <.header>
         {@title}
-        <:subtitle>Use this form to manage goal records in your database.</:subtitle>
       </.header>
 
       <.simple_form
@@ -22,7 +20,12 @@ defmodule TrackerWeb.GoalLive.FormComponent do
       >
         <.input field={@form[:description]} type="text" label="Description" />
         <.input type="select" field={@form[:type]} label="Type" options={@type_options} />
-        <.input field={@form[:numeric_target]} type="number" label="Numeric goal" />
+        <.input
+          :if={Ecto.Changeset.get_field(@form.source, :type) == :numeric}
+          field={@form[:numeric_target]}
+          type="number"
+          label="Target count"
+        />
         <:actions>
           <.button phx-disable-with="Saving...">Save Goal</.button>
         </:actions>
@@ -45,6 +48,7 @@ defmodule TrackerWeb.GoalLive.FormComponent do
   @impl true
   def handle_event("validate", %{"goal" => goal_params}, socket) do
     changeset = Goals.change_goal(socket.assigns.goal, goal_params)
+
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
@@ -88,11 +92,7 @@ defmodule TrackerWeb.GoalLive.FormComponent do
     assign(
       socket,
       :type_options,
-      Goal
-      |> Ecto.Enum.values(:type)
-      |> Enum.map(fn type ->
-        {String.capitalize(to_string(type)), type}
-      end)
+      [{"Task", :boolean}, {"Count", :numeric}]
     )
   end
 end

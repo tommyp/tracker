@@ -45,7 +45,7 @@ defmodule Tracker.GoalsTest do
     end
 
     test "create_goal/1 cannot create a numeric goal with number less than or equal to 0" do
-      invalid_attrs = %{type: :numeric, description: "Do -1 pushups", numeric_target: -1}
+      invalid_attrs = %{type: :numeric, description: "Do negative pushups", numeric_target: -1}
 
       assert {:error, changeset} = Goals.create_goal(invalid_attrs)
 
@@ -78,12 +78,13 @@ defmodule Tracker.GoalsTest do
     end
 
     test "create_goal/1 cannot create a boolean goal with a numeric target" do
-      invalid_attrs = %{type: :boolean, description: "Go for a 1km walk", numeric_target: 1000}
+      boolean_attrs = %{type: :boolean, description: "Go for a 1km walk", numeric_target: 1000}
 
-      assert {:error, changeset} = Goals.create_goal(invalid_attrs)
+      assert {:ok, %Goal{} = goal} = Goals.create_goal(boolean_attrs)
 
-      assert changeset.errors ==
-               [type: {"A boolean goal cannot have a target", []}]
+      assert goal.type == :boolean
+      assert goal.description == "Go for a 1km walk"
+      assert goal.numeric_target == nil
     end
 
     test "create_goal/1 with invalid data returns error changeset" do

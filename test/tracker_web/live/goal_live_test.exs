@@ -4,7 +4,6 @@ defmodule TrackerWeb.GoalLiveTest do
   import Phoenix.LiveViewTest
   import Tracker.GoalsFixtures
 
-  @create_attrs %{type: :numeric, description: "some description", numeric_target: 42}
   @update_attrs %{
     type: :boolean,
     description: "some updated description",
@@ -30,7 +29,7 @@ defmodule TrackerWeb.GoalLiveTest do
     test "saves new goal", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/goals")
 
-      assert index_live |> element("a", "New Goal") |> render_click() =~
+      assert index_live |> element("a#new-goal") |> render_click() =~
                "New Goal"
 
       assert_patch(index_live, ~p"/goals/new")
@@ -40,7 +39,7 @@ defmodule TrackerWeb.GoalLiveTest do
              |> render_change() =~ "can&#39;t be blank"
 
       assert index_live
-             |> form("#goal-form", goal: %{@create_attrs | description: "Another goal"})
+             |> form("#goal-form", goal: %{description: "Another goal", type: :numeric})
              |> render_submit()
 
       assert_patch(index_live, ~p"/goals")
