@@ -71,7 +71,7 @@ defmodule TrackerWeb.DayLiveTest do
   end
 
   test "increments and decrements a numeric goal", %{conn: conn} do
-    goal = numeric_goal_fixture(%{description: "Medidate for 10 minutes"})
+    goal = numeric_goal_fixture(%{description: "Meditate for 10 minutes"})
 
     {:ok, view, _html} = live(conn, ~p"/")
 
@@ -117,5 +117,25 @@ defmodule TrackerWeb.DayLiveTest do
     |> render_click()
 
     assert nil == Tracker.Repo.reload(entry)
+  end
+
+  test "can set a count against a goal", %{conn: conn} do
+    goal = numeric_goal_fixture(%{description: "Meditate for 10 minutes"})
+
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    html =
+      view
+      |> element("button#open-set-count-modal-#{goal.id}")
+      |> render_click()
+
+    assert html =~ "Set count"
+
+    html =
+      view
+      |> form("#goal-entry-form", goal_entry: %{count: 5})
+      |> render_submit()
+
+    assert html =~ "5"
   end
 end

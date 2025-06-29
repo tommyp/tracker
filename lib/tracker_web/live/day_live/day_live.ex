@@ -11,6 +11,7 @@ defmodule TrackerWeb.DayLive.Show do
     socket =
       socket
       |> maybe_assign_date(params)
+      |> assign(:count_modal_open, false)
       |> assign_goals_and_entries()
 
     {:noreply, socket}
@@ -66,11 +67,22 @@ defmodule TrackerWeb.DayLive.Show do
             goal_completed?(goal, entry) && "bg-zinc-100 opacity-70"
           ]}
         >
-          <p class="text-lg">{goal.description} {entry && entry.count}</p>
+          <p class="text-lg">{goal.description}</p>
           <.actions goal={goal} goal_entry={entry} />
         </li>
       </ul>
     </main>
+
+    <.modal :if={@count_modal_open} id="count-modal" show>
+      <.live_component
+        module={TrackerWeb.DayLive.SetCountComponent}
+        id="set-count"
+        selected_goal_id={@selected_goal_id}
+        title="Set count"
+        date={@date}
+        patch={~p"/?date=#{Date.to_string(@date)}"}
+      />
+    </.modal>
     """
   end
 
@@ -84,7 +96,7 @@ defmodule TrackerWeb.DayLive.Show do
         id={"toggle-completed-#{@goal.id}"}
       >
         <svg
-          :if={!goal_completed?(@goal_entry)}
+          :if={!goal_completed?(@goal, @goal_entry)}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -96,7 +108,7 @@ defmodule TrackerWeb.DayLive.Show do
         </svg>
 
         <svg
-          :if={goal_completed?(@goal_entry)}
+          :if={goal_completed?(@goal, @goal_entry)}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -113,7 +125,7 @@ defmodule TrackerWeb.DayLive.Show do
 
   defp actions(%{goal: %{type: :numeric}} = assigns) do
     ~H"""
-    <div>
+    <div class="flex justify-between items-stretch gap-x-2">
       <.button
         id={"decrement-#{@goal.id}"}
         disabled={is_nil(@goal_entry)}
@@ -122,6 +134,14 @@ defmodule TrackerWeb.DayLive.Show do
         phx-value-goal-entry-id={maybe_goal_entry_id(@goal_entry)}
       >
         -
+      </.button>
+      <.button
+        id={"open-set-count-modal-#{@goal.id}"}
+        phx-click="open-set-count-modal"
+        phx-value-goal-id={@goal.id}
+        phx-value-goal-entry-id={maybe_goal_entry_id(@goal_entry)}
+      >
+        {if(@goal_entry, do: @goal_entry.count, else: 0)}
       </.button>
       <.button
         id={"increment-#{@goal.id}"}
@@ -134,9 +154,6 @@ defmodule TrackerWeb.DayLive.Show do
     </div>
     """
   end
-
-  defp goal_completed?(nil), do: false
-  defp goal_completed?(%{completed: status}), do: status
 
   defp yesterday_button(assigns) do
     assigns = assign(assigns, :date, Date.add(assigns.date, -1))
@@ -267,6 +284,19 @@ defmodule TrackerWeb.DayLive.Show do
     end
 
     {:noreply, assign(socket, :goals_and_entries, Goals.list_goals_with_entries_for_date(date))}
+  end
+
+  def handle_event(
+        "open-set-count-modal",
+        %{"goal-id" => goal_id},
+        socket
+      ) do
+    socket =
+      socket
+      |> assign(:count_modal_open, true)
+      |> assign(:selected_goal_id, goal_id)
+
+    {:noreply, socket}
   end
 
   defp maybe_assign_date(socket, params) do

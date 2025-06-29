@@ -19,6 +19,8 @@ walk =
     description: "Go for a walk"
   })
 
+:timer.sleep(1)
+
 read =
   Repo.insert!(%Goal{
     type: :numeric,
@@ -26,11 +28,15 @@ read =
     description: "Read at least 20 pages"
   })
 
+:timer.sleep(1)
+
 medication =
   Repo.insert!(%Goal{
     type: :boolean,
     description: "Take medication"
   })
+
+:timer.sleep(1)
 
 pushups =
   Repo.insert!(%Goal{

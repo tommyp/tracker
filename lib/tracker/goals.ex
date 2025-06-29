@@ -35,6 +35,7 @@ defmodule Tracker.Goals do
       g in Goal,
       left_join: ge in GoalEntry,
       on: ge.goal_id == g.id and ge.date == ^date,
+      order_by: g.inserted_at,
       select: {g, ge}
     )
     |> Repo.all()
@@ -153,6 +154,25 @@ defmodule Tracker.Goals do
   def get_goal_entry!(id), do: Repo.get!(GoalEntry, id)
 
   @doc """
+  Gets a single goal_entry by goal id and date.
+
+  Raises `Ecto.NoResultsError` if the Goal entry does not exist.
+
+  ## Examples
+
+      iex> get_goal_entry_by_goal_id_and_date(123)
+      %GoalEntry{}
+
+      iex> get_goal_entry_by_goal_id_and_date(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_goal_entry_by_goal_id_and_date(goal_id, date) do
+    from(ge in GoalEntry, where: ge.goal_id == ^goal_id and ge.date == ^date)
+    |> Repo.one()
+  end
+
+  @doc """
   Creates a goal_entry.
 
   ## Examples
@@ -191,6 +211,24 @@ defmodule Tracker.Goals do
   end
 
   @doc """
+  Updates a goal_entry's count.
+
+  ## Examples
+
+      iex> update_goal_entry_count(goal_entry, %{count: N})
+      {:ok, %GoalEntry{}}
+
+      iex> update_goal_entry_count(goal_entry, %{count: -1})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_goal_entry_count(%GoalEntry{} = goal_entry, attrs) do
+    goal_entry
+    |> GoalEntry.count_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Deletes a goal_entry.
 
   ## Examples
@@ -217,6 +255,20 @@ defmodule Tracker.Goals do
   """
   def change_goal_entry(%GoalEntry{} = goal_entry, attrs \\ %{}) do
     GoalEntry.changeset(goal_entry, attrs)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking only goal_entry count changes.
+
+  ## Examples
+
+      iex> change_goal_entry_count(goal_entry)
+      %Ecto.Changeset{data: %GoalEntry{}}
+
+  """
+
+  def change_goal_entry_count(%GoalEntry{} = goal_entry, attrs \\ %{}) do
+    GoalEntry.count_changeset(goal_entry, attrs)
   end
 
   def increment_goal_entry_count(%GoalEntry{} = goal_entry) do
