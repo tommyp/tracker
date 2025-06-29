@@ -5,7 +5,6 @@ defmodule TrackerWeb.GoalLiveTest do
   import Tracker.GoalsFixtures
 
   @update_attrs %{
-    type: :boolean,
     description: "some updated description",
     numeric_target: nil
   }

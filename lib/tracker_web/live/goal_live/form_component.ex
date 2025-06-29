@@ -19,7 +19,13 @@ defmodule TrackerWeb.GoalLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:description]} type="text" label="Description" />
-        <.input type="select" field={@form[:type]} label="Type" options={@type_options} />
+        <.input
+          type="select"
+          field={@form[:type]}
+          label="Type"
+          options={@type_options}
+          disabled={@action == :edit}
+        />
         <.input
           :if={Ecto.Changeset.get_field(@form.source, :type) == :numeric}
           field={@form[:numeric_target]}
