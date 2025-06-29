@@ -22,8 +22,8 @@ And then visit [localhost:4000](http://localhost:4000)
 - ~log a boolean goal as completed~
 - ~log progress against a numeric goal~
 - ~seed data~
+- ~parse goal description for numeric target~
 - enter a count against a numeric goal
 - edit progress of goals
 - reports on recent goal progress
 - weekly average report on goals
-- parse goal description for numeric target
