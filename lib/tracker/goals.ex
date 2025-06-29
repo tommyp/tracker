@@ -35,6 +35,7 @@ defmodule Tracker.Goals do
       g in Goal,
       left_join: ge in GoalEntry,
       on: ge.goal_id == g.id and ge.date == ^date,
+      order_by: g.inserted_at,
       select: {g, ge}
     )
     |> Repo.all()
