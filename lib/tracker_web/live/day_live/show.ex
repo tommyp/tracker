@@ -232,7 +232,7 @@ defmodule TrackerWeb.DayLive.Show do
         Goals.update_goal_entry(entry, %{completed: !entry.completed})
     end
 
-    {:noreply, assign(socket, :goals_and_entries, Goals.list_goals_with_entries_for_date(date))}
+    {:noreply, assign_goals_and_entries(socket)}
   end
 
   def handle_event(
@@ -254,7 +254,7 @@ defmodule TrackerWeb.DayLive.Show do
         Goals.increment_goal_entry_count(entry)
     end
 
-    {:noreply, assign(socket, :goals_and_entries, Goals.list_goals_with_entries_for_date(date))}
+    {:noreply, assign_goals_and_entries(socket)}
   end
 
   def handle_event(
@@ -283,7 +283,7 @@ defmodule TrackerWeb.DayLive.Show do
         end
     end
 
-    {:noreply, assign(socket, :goals_and_entries, Goals.list_goals_with_entries_for_date(date))}
+    {:noreply, assign_goals_and_entries(socket)}
   end
 
   def handle_event(
