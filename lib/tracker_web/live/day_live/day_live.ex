@@ -92,7 +92,7 @@ defmodule TrackerWeb.DayLive.Show do
         id={"toggle-completed-#{@goal.id}"}
       >
         <svg
-          :if={!goal_completed?(@goal_entry)}
+          :if={!goal_completed?(@goal, @goal_entry)}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -104,7 +104,7 @@ defmodule TrackerWeb.DayLive.Show do
         </svg>
 
         <svg
-          :if={goal_completed?(@goal_entry)}
+          :if={goal_completed?(@goal, @goal_entry)}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -143,9 +143,6 @@ defmodule TrackerWeb.DayLive.Show do
     </div>
     """
   end
-
-  defp goal_completed?(nil), do: false
-  defp goal_completed?(%{completed: status}), do: status
 
   defp yesterday_button(assigns) do
     assigns = assign(assigns, :date, Date.add(assigns.date, -1))
