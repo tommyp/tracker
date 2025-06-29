@@ -54,7 +54,7 @@ defmodule TrackerWeb.DayLiveTest do
     {:ok, view, _html} = live(conn, ~p"/")
 
     view
-    |> element("button#toggle-completed[phx-value-goal-id='#{goal_1.id}]")
+    |> element("button#toggle-completed-#{goal_1.id}")
     |> render_click()
 
     [entry] = Goals.list_goal_entries()
@@ -63,7 +63,7 @@ defmodule TrackerWeb.DayLiveTest do
     assert entry.completed == true
 
     view
-    |> element("button#toggle-completed[phx-value-goal-id='#{goal_1.id}]")
+    |> element("button#toggle-completed-#{goal_1.id}")
     |> render_click()
 
     entry = Tracker.Repo.reload!(entry)

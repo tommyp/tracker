@@ -61,7 +61,7 @@ defmodule TrackerWeb.DayLive.Show do
         phx-click="toggle_complete"
         phx-value-goal-id={@goal.id}
         phx-value-goal-entry-id={maybe_goal_entry_id(@goal_entry)}
-        id="toggle-completed"
+        id={"toggle-completed-#{@goal.id}"}
       >
         <svg
           :if={!goal_completed?(@goal_entry)}
