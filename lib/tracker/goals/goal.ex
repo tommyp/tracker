@@ -13,7 +13,7 @@ defmodule Tracker.Goals.Goal do
     field :description, :string
     field :numeric_target, :integer
 
-    has_many :entries, GoalEntry
+    has_many :entries, GoalEntry, on_delete: :delete_all
 
     timestamps(type: :utc_datetime)
   end
