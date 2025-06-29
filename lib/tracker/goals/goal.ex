@@ -21,6 +21,10 @@ defmodule Tracker.Goals.Goal do
     goal
     |> cast(attrs, [:description, :type, :numeric_target])
     |> validate_required([:description, :type])
+    |> unique_constraint(:description,
+      name: "unique_goal_description",
+      message: "You already have a goal with this description"
+    )
     |> validate_boolean_type_has_no_target()
     |> validate_numeric_target_greater_than_0()
   end

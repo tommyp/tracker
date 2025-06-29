@@ -20,5 +20,9 @@ defmodule Tracker.Goals.GoalEntry do
     goal_entry
     |> cast(attrs, [:count, :completed, :date])
     |> validate_required([:date])
+    |> unique_constraint(:date,
+      name: :unique_goal_entry_date_and_goal_id,
+      message: "A goal can only have one entry per date"
+    )
   end
 end

@@ -40,7 +40,7 @@ defmodule TrackerWeb.GoalLiveTest do
              |> render_change() =~ "can&#39;t be blank"
 
       assert index_live
-             |> form("#goal-form", goal: @create_attrs)
+             |> form("#goal-form", goal: %{@create_attrs | description: "Another goal"})
              |> render_submit()
 
       assert_patch(index_live, ~p"/goals")

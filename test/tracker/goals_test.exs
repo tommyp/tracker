@@ -25,7 +25,7 @@ defmodule Tracker.GoalsTest do
           completed: true
         })
 
-      goal_2 = numeric_goal_fixture()
+      goal_2 = numeric_goal_fixture(%{description: "Another goal"})
 
       assert Goals.list_goals_with_entries_for_date(date) == [{goal_1, entry}, {goal_2, nil}]
     end
@@ -88,6 +88,24 @@ defmodule Tracker.GoalsTest do
 
     test "create_goal/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Goals.create_goal(@invalid_attrs)
+    end
+
+    test "create_goal/1 with duplicate description returns error changeset" do
+      goal = numeric_goal_fixture()
+
+      assert {:error, changeset} =
+               Goals.create_goal(%{
+                 type: goal.type,
+                 description: goal.description,
+                 numeric_target: goal.numeric_target
+               })
+
+      assert changeset.errors ==
+               [
+                 description:
+                   {"You already have a goal with this description",
+                    [{:constraint, :unique}, {:constraint_name, "unique_goal_description"}]}
+               ]
     end
 
     test "update_goal/2 with valid data updates the goal" do
@@ -155,6 +173,23 @@ defmodule Tracker.GoalsTest do
     test "create_goal_entry/1 with invalid data returns error changeset" do
       goal = boolean_goal_fixture()
       assert {:error, %Ecto.Changeset{}} = Goals.create_goal_entry(goal, @invalid_attrs)
+    end
+
+    test "create_goal_entry/1 with duplicate date returns error changeset" do
+      goal = boolean_goal_fixture()
+      date = ~D[2025-06-27]
+      Goals.create_goal_entry(goal, %{date: date, completed: true})
+
+      assert {:error, changeset} = Goals.create_goal_entry(goal, %{date: date, completed: false})
+
+      assert changeset.errors == [
+               date:
+                 {"A goal can only have one entry per date",
+                  [
+                    {:constraint, :unique},
+                    {:constraint_name, "unique_goal_entry_date_and_goal_id"}
+                  ]}
+             ]
     end
 
     test "update_goal_entry/2 with valid data updates the goal_entry" do
