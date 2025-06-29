@@ -7,7 +7,7 @@ defmodule Tracker.Goals.Goal do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "goals" do
-    field :type, Ecto.Enum, values: [:numeric, :boolean]
+    field :type, Ecto.Enum, values: [:boolean, :numeric]
     field :description, :string
     field :numeric_target, :integer
 

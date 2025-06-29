@@ -22,7 +22,12 @@ defmodule TrackerWeb.GoalLive.FormComponent do
       >
         <.input field={@form[:description]} type="text" label="Description" />
         <.input type="select" field={@form[:type]} label="Type" options={@type_options} />
-        <.input field={@form[:numeric_target]} type="number" label="Numeric goal" />
+        <.input
+          :if={Ecto.Changeset.get_field(@form.source, :type) == :numeric}
+          field={@form[:numeric_target]}
+          type="number"
+          label="Numeric goal"
+        />
         <:actions>
           <.button phx-disable-with="Saving...">Save Goal</.button>
         </:actions>
