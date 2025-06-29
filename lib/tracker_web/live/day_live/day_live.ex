@@ -66,7 +66,7 @@ defmodule TrackerWeb.DayLive.Show do
             goal_completed?(goal, entry) && "bg-zinc-100 opacity-70"
           ]}
         >
-          <p class="text-lg">{goal.description} {entry && entry.count}</p>
+          <p class="text-lg">{goal.description}</p>
           <.actions goal={goal} goal_entry={entry} />
         </li>
       </ul>
@@ -121,7 +121,7 @@ defmodule TrackerWeb.DayLive.Show do
 
   defp actions(%{goal: %{type: :numeric}} = assigns) do
     ~H"""
-    <div>
+    <div class="flex justify-between items-stretch gap-x-2">
       <.button
         id={"decrement-#{@goal.id}"}
         disabled={is_nil(@goal_entry)}
@@ -131,6 +131,7 @@ defmodule TrackerWeb.DayLive.Show do
       >
         -
       </.button>
+      <span class="flex pt-2">{if(@goal_entry, do: @goal_entry.count, else: 0)}</span>
       <.button
         id={"increment-#{@goal.id}"}
         phx-click="increment"
