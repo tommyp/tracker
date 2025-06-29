@@ -46,7 +46,7 @@ defmodule TrackerWeb.GoalLiveTest do
 
       html = render(index_live)
       assert html =~ "Goal created successfully"
-      assert html =~ "numeric"
+      assert html =~ "Count"
     end
 
     test "updates goal in listing", %{conn: conn, goal: goal} do

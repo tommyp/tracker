@@ -34,7 +34,7 @@
   row_click={fn {_id, goal} -> JS.navigate(~p"/goals/#{goal}") end}
 >
   <:col :let={{_id, goal}} label="Description">{goal.description}</:col>
-  <:col :let={{_id, goal}} label="Type">{goal.type}</:col>
+  <:col :let={{_id, goal}} label="Type">{type_label(goal.type)}</:col>
   <:col :let={{_id, goal}} label="Numeric goal">{goal.numeric_target}</:col>
   <:action :let={{_id, goal}}>
     <div class="sr-only">

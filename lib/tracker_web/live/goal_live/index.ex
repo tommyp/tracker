@@ -44,4 +44,7 @@ defmodule TrackerWeb.GoalLive.Index do
 
     {:noreply, stream_delete(socket, :goals, goal)}
   end
+
+  defp type_label(:boolean), do: "Task"
+  defp type_label(:numeric), do: "Count"
 end
