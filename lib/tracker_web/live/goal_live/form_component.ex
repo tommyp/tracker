@@ -1,5 +1,4 @@
 defmodule TrackerWeb.GoalLive.FormComponent do
-  alias Tracker.Goals.Goal
   use TrackerWeb, :live_component
 
   alias Tracker.Goals
@@ -10,7 +9,6 @@ defmodule TrackerWeb.GoalLive.FormComponent do
     <div>
       <.header>
         {@title}
-        <:subtitle>Use this form to manage goal records in your database.</:subtitle>
       </.header>
 
       <.simple_form
@@ -26,7 +24,7 @@ defmodule TrackerWeb.GoalLive.FormComponent do
           :if={Ecto.Changeset.get_field(@form.source, :type) == :numeric}
           field={@form[:numeric_target]}
           type="number"
-          label="Numeric goal"
+          label="Target count"
         />
         <:actions>
           <.button phx-disable-with="Saving...">Save Goal</.button>
@@ -93,11 +91,7 @@ defmodule TrackerWeb.GoalLive.FormComponent do
     assign(
       socket,
       :type_options,
-      Goal
-      |> Ecto.Enum.values(:type)
-      |> Enum.map(fn type ->
-        {String.capitalize(to_string(type)), type}
-      end)
+      [{"Task", :boolean}, {"Count", :numeric}]
     )
   end
 end
