@@ -27,6 +27,7 @@ defmodule TrackerWeb.DayLive.Show do
         <.link
           class="flex gap-x-2 bg-white hover:bg-green-500 p-1 border border-green-500 rounded text-green-500 hover:text-white"
           href={~p"/goals/new"}
+          id="new-goal"
         >
           New goal
           <svg

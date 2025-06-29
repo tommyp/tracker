@@ -1,3 +1,5 @@
+require Logger
+
 defmodule Tracker.Goals.Goal do
   use Ecto.Schema
   import Ecto.Changeset
@@ -20,6 +22,7 @@ defmodule Tracker.Goals.Goal do
   def changeset(goal, attrs) do
     goal
     |> cast(attrs, [:description, :type, :numeric_target])
+    |> maybe_set_numeric_target()
     |> validate_required([:description, :type])
     |> unique_constraint(:description,
       name: "unique_goal_description",
@@ -52,6 +55,40 @@ defmodule Tracker.Goals.Goal do
       validate_number(changeset, :numeric_target, greater_than: 0)
     else
       changeset
+    end
+  end
+
+  def maybe_set_numeric_target(changeset) do
+    description = get_field(changeset, :description)
+    type = get_field(changeset, :type)
+
+    cond do
+      is_nil(description) ->
+        changeset
+
+      type == :boolean ->
+        changeset
+        |> put_change(:numeric_target, nil)
+
+      true ->
+        result = Regex.run(~r/\d+/, description)
+
+        if is_nil(result) do
+          changeset
+        else
+          number = List.first(result)
+
+          case Integer.parse(number) do
+            {int, _decimal} ->
+              changeset
+              |> put_change(:numeric_target, int)
+
+            :error ->
+              Logger.error("Incorrectly parsed #{number} as digits")
+
+              changeset
+          end
+        end
     end
   end
 end

@@ -48,6 +48,7 @@ defmodule TrackerWeb.GoalLive.FormComponent do
   @impl true
   def handle_event("validate", %{"goal" => goal_params}, socket) do
     changeset = Goals.change_goal(socket.assigns.goal, goal_params)
+
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
