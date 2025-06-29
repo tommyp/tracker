@@ -175,6 +175,23 @@ defmodule Tracker.GoalsTest do
       assert {:error, %Ecto.Changeset{}} = Goals.create_goal_entry(goal, @invalid_attrs)
     end
 
+    test "create_goal_entry/1 with duplicate date returns error changeset" do
+      goal = boolean_goal_fixture()
+      date = ~D[2025-06-27]
+      Goals.create_goal_entry(goal, %{date: date, completed: true})
+
+      assert {:error, changeset} = Goals.create_goal_entry(goal, %{date: date, completed: false})
+
+      assert changeset.errors == [
+               date:
+                 {"A goal can only have one entry per date",
+                  [
+                    {:constraint, :unique},
+                    {:constraint_name, "unique_goal_entry_date_and_goal_id"}
+                  ]}
+             ]
+    end
+
     test "update_goal_entry/2 with valid data updates the goal_entry" do
       goal = boolean_goal_fixture()
       goal_entry = goal_entry_fixture(goal)
