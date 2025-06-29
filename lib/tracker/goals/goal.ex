@@ -2,12 +2,13 @@ defmodule Tracker.Goals.Goal do
   use Ecto.Schema
   import Ecto.Changeset
 
+  require Logger
   alias Tracker.Goals.GoalEntry
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "goals" do
-    field :type, Ecto.Enum, values: [:numeric, :boolean]
+    field :type, Ecto.Enum, values: [:numeric, :boolean], default: :boolean
     field :description, :string
     field :numeric_target, :integer
 
@@ -19,7 +20,8 @@ defmodule Tracker.Goals.Goal do
   @doc false
   def changeset(goal, attrs) do
     goal
-    |> cast(attrs, [:description, :type, :numeric_target])
+    |> cast(attrs, [:description])
+    |> maybe_set_type_and_numeric_target()
     |> validate_required([:description, :type])
     |> unique_constraint(:description,
       name: "unique_goal_description",
@@ -52,6 +54,41 @@ defmodule Tracker.Goals.Goal do
       validate_number(changeset, :numeric_target, greater_than: 0)
     else
       changeset
+    end
+  end
+
+  defp maybe_set_type_and_numeric_target(changeset) do
+    description = get_field(changeset, :description)
+
+    if is_nil(description) do
+      changeset
+    else
+      result = Regex.run(~r/\d+/, description)
+
+      dbg(result)
+
+      if is_nil(result) do
+        changeset
+        |> put_change(:type, :boolean)
+        |> put_change(:numeric_target, nil)
+      else
+        number = List.first(result)
+
+        dbg(number)
+
+        case Integer.parse(number) do
+          {int, _decimal} ->
+            changeset
+            |> put_change(:type, :numeric)
+            |> put_change(:numeric_target, int)
+            |> dbg()
+
+          :error ->
+            Logger.error("Incorrectly parsed #{number} as digits")
+
+            changeset
+        end
+      end
     end
   end
 end

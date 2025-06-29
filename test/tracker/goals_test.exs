@@ -36,7 +36,7 @@ defmodule Tracker.GoalsTest do
     end
 
     test "create_goal/1 can create a numeric goal" do
-      numeric_attrs = %{type: :numeric, description: "Do 42 pushups", numeric_target: 42}
+      numeric_attrs = %{description: "Do 42 pushups"}
 
       assert {:ok, %Goal{} = goal} = Goals.create_goal(numeric_attrs)
       assert goal.type == :numeric
