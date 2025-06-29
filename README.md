@@ -20,7 +20,8 @@ And then visit [localhost:4000](http://localhost:4000)
 - ~add goals~
 - ~browse by day~
 - ~log a boolean goal as completed~
-- log progress against a numeric goal
+- ~log progress against a numeric goal~
+- enter a count against a numeric goal
 - seed data
 - edit progress of goals
 - reports on recent goal progress

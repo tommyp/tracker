@@ -218,4 +218,20 @@ defmodule Tracker.Goals do
   def change_goal_entry(%GoalEntry{} = goal_entry, attrs \\ %{}) do
     GoalEntry.changeset(goal_entry, attrs)
   end
+
+  def increment_goal_entry_count(%GoalEntry{} = goal_entry) do
+    from(ge in GoalEntry,
+      update: [inc: [count: 1]],
+      where: ge.id == ^goal_entry.id
+    )
+    |> Repo.update_all([])
+  end
+
+  def decrement_goal_entry_count(%GoalEntry{} = goal_entry) do
+    from(ge in GoalEntry,
+      update: [inc: [count: -1]],
+      where: ge.id == ^goal_entry.id
+    )
+    |> Repo.update_all([])
+  end
 end

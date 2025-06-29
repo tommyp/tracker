@@ -54,7 +54,7 @@ defmodule TrackerWeb.DayLiveTest do
     {:ok, view, _html} = live(conn, ~p"/")
 
     view
-    |> element("button#toggle-completed[phx-value-goal-id='#{goal_1.id}]")
+    |> element("button#toggle-completed-#{goal_1.id}")
     |> render_click()
 
     [entry] = Goals.list_goal_entries()
@@ -63,10 +63,59 @@ defmodule TrackerWeb.DayLiveTest do
     assert entry.completed == true
 
     view
-    |> element("button#toggle-completed[phx-value-goal-id='#{goal_1.id}]")
+    |> element("button#toggle-completed-#{goal_1.id}")
     |> render_click()
 
     entry = Tracker.Repo.reload!(entry)
     assert entry.completed == false
+  end
+
+  test "increments and decrements a numeric goal", %{conn: conn} do
+    goal = numeric_goal_fixture(%{description: "Medidate for 10 minutes"})
+
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    view
+    |> element("button#increment-#{goal.id}")
+    |> render_click()
+
+    [entry] = Goals.list_goal_entries()
+
+    assert entry.goal_id == goal.id
+    assert entry.count == 1
+
+    view
+    |> element("button#increment-#{goal.id}")
+    |> render_click()
+
+    entry = Tracker.Repo.reload!(entry)
+    assert entry.count == 2
+
+    view
+    |> element("button#increment-#{goal.id}")
+    |> render_click()
+
+    entry = Tracker.Repo.reload!(entry)
+    assert entry.count == 3
+
+    view
+    |> element("button#decrement-#{goal.id}")
+    |> render_click()
+
+    entry = Tracker.Repo.reload!(entry)
+    assert entry.count == 2
+
+    view
+    |> element("button#decrement-#{goal.id}")
+    |> render_click()
+
+    entry = Tracker.Repo.reload!(entry)
+    assert entry.count == 1
+
+    view
+    |> element("button#decrement-#{goal.id}")
+    |> render_click()
+
+    assert nil == Tracker.Repo.reload(entry)
   end
 end
