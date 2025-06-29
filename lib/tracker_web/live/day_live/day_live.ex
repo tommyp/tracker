@@ -306,8 +306,7 @@ defmodule TrackerWeb.DayLive.Show do
         assign(socket, :date, Date.from_iso8601!(date))
       rescue
         ArgumentError ->
-          socket
-          |> push_patch(to: ~p"/")
+          assign(socket, :date, Date.utc_today())
       end
     else
       assign(socket, :date, Date.utc_today())
