@@ -1,13 +1,13 @@
 defmodule TrackerWeb.Utils.DateHelpers do
   def humanized!(date) do
     cond do
-      date == Date.utc_today() ->
+      Date.compare(date, Date.utc_today()) == :eq ->
         "Today"
 
-      date == Date.utc_today() |> Date.add(1) ->
+      Date.compare(date, Date.utc_today() |> Date.add(1)) == :eq ->
         "Tomorrow"
 
-      date == Date.utc_today() |> Date.add(-1) ->
+      Date.compare(date, Date.utc_today() |> Date.add(-1)) == :eq ->
         "Yesterday"
 
       date ->
