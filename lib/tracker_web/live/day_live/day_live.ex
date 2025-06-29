@@ -1,4 +1,5 @@
 defmodule TrackerWeb.DayLive.Show do
+  alias Tracker.Goals.Goal
   alias Tracker.Goals.GoalEntry
   alias Tracker.Goals
   alias TrackerWeb.Utils.DateHelpers
@@ -32,7 +33,7 @@ defmodule TrackerWeb.DayLive.Show do
           :for={{goal, entry} <- @goals_and_entries}
           class={[
             "flex justify-between px-4 py-2 border border-zinc-300",
-            entry && entry.completed && "bg-zinc-100 opacity-70"
+            goal_completed?(goal, entry) && "bg-zinc-100 opacity-70"
           ]}
         >
           <p class="text-lg">{goal.description}</p>
@@ -42,6 +43,14 @@ defmodule TrackerWeb.DayLive.Show do
     </main>
     """
   end
+
+  defp goal_completed?(%Goal{type: :boolean}, %GoalEntry{completed: true}), do: true
+
+  defp goal_completed?(%Goal{type: :numeric, numeric_target: target}, %GoalEntry{count: count})
+       when count >= target,
+       do: true
+
+  defp goal_completed?(_, _), do: false
 
   defp actions(%{goal: %{type: :boolean}} = assigns) do
     ~H"""
@@ -83,10 +92,19 @@ defmodule TrackerWeb.DayLive.Show do
   defp actions(%{goal: %{type: :numeric}} = assigns) do
     ~H"""
     <div>
-      <.button phx-click="decrement">
+      <.button
+        phx-click="decrement"
+        phx-value-goal-id={@goal.id}
+        phx-value-goal-entry-id={maybe_goal_entry_id(@goal_entry)}
+      >
         -
       </.button>
-      <.button phx-click="increment">
+      <.button
+        id="increment"
+        phx-click="increment"
+        phx-value-goal-id={@goal.id}
+        phx-value-goal-entry-id={maybe_goal_entry_id(@goal_entry)}
+      >
         +
       </.button>
     </div>
@@ -171,6 +189,28 @@ defmodule TrackerWeb.DayLive.Show do
         entry = Goals.get_goal_entry!(id)
 
         Goals.update_goal_entry(entry, %{completed: !entry.completed})
+    end
+
+    {:noreply, assign(socket, :goals_and_entries, Goals.list_goals_with_entries_for_date(date))}
+  end
+
+  def handle_event(
+        "increment",
+        %{"goal-id" => goal_id} = params,
+        %{assigns: %{date: date}} = socket
+      ) do
+    goal = Goals.get_goal!(goal_id)
+
+    goal_entry_id = Map.get(params, "goal-entry-id")
+
+    case goal_entry_id do
+      nil ->
+        Goals.create_goal_entry(goal, %{count: 1, date: date})
+
+      id ->
+        entry = Goals.get_goal_entry!(id)
+
+        Goals.increment_goal_entry_count(entry)
     end
 
     {:noreply, assign(socket, :goals_and_entries, Goals.list_goals_with_entries_for_date(date))}

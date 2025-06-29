@@ -69,4 +69,33 @@ defmodule TrackerWeb.DayLiveTest do
     entry = Tracker.Repo.reload!(entry)
     assert entry.completed == false
   end
+
+  test "increments a numeric goal", %{conn: conn} do
+    goal = numeric_goal_fixture(%{description: "Medidate for 10 minutes"})
+
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    view
+    |> element("button#increment[phx-value-goal-id='#{goal.id}]")
+    |> render_click()
+
+    [entry] = Goals.list_goal_entries()
+
+    assert entry.goal_id == goal.id
+    assert entry.count == 1
+
+    view
+    |> element("button#increment[phx-value-goal-id='#{goal.id}]")
+    |> render_click()
+
+    entry = Tracker.Repo.reload!(entry)
+    assert entry.count == 2
+
+    view
+    |> element("button#increment[phx-value-goal-id='#{goal.id}]")
+    |> render_click()
+
+    entry = Tracker.Repo.reload!(entry)
+    assert entry.count == 3
+  end
 end
