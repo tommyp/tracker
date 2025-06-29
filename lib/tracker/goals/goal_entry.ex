@@ -25,4 +25,10 @@ defmodule Tracker.Goals.GoalEntry do
       message: "A goal can only have one entry per date"
     )
   end
+
+  def count_changeset(goal_entry, attrs) do
+    goal_entry
+    |> cast(attrs, [:count])
+    |> validate_number(:count, greater_than: 0)
+  end
 end

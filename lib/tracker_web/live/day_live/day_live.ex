@@ -11,6 +11,7 @@ defmodule TrackerWeb.DayLive.Show do
     socket =
       socket
       |> maybe_assign_date(params)
+      |> assign(:count_modal_open, false)
       |> assign_goals_and_entries()
 
     {:noreply, socket}
@@ -71,6 +72,17 @@ defmodule TrackerWeb.DayLive.Show do
         </li>
       </ul>
     </main>
+
+    <.modal :if={@count_modal_open} id="count-modal" show>
+      <.live_component
+        module={TrackerWeb.DayLive.SetCountComponent}
+        id="set-count"
+        selected_goal_id={@selected_goal_id}
+        title="Set count"
+        date={@date}
+        patch={~p"/?date=#{Date.to_string(@date)}"}
+      />
+    </.modal>
     """
   end
 
@@ -131,7 +143,14 @@ defmodule TrackerWeb.DayLive.Show do
       >
         -
       </.button>
-      <span class="flex pt-2">{if(@goal_entry, do: @goal_entry.count, else: 0)}</span>
+      <.button
+        id={"open-set-count-modal-#{@goal.id}"}
+        phx-click="open-set-count-modal"
+        phx-value-goal-id={@goal.id}
+        phx-value-goal-entry-id={maybe_goal_entry_id(@goal_entry)}
+      >
+        {if(@goal_entry, do: @goal_entry.count, else: 0)}
+      </.button>
       <.button
         id={"increment-#{@goal.id}"}
         phx-click="increment"
@@ -273,6 +292,19 @@ defmodule TrackerWeb.DayLive.Show do
     end
 
     {:noreply, assign(socket, :goals_and_entries, Goals.list_goals_with_entries_for_date(date))}
+  end
+
+  def handle_event(
+        "open-set-count-modal",
+        %{"goal-id" => goal_id},
+        socket
+      ) do
+    socket =
+      socket
+      |> assign(:count_modal_open, true)
+      |> assign(:selected_goal_id, goal_id)
+
+    {:noreply, socket}
   end
 
   defp maybe_assign_date(socket, params) do
