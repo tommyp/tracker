@@ -74,14 +74,6 @@ defmodule TrackerWeb.DayLive.Show do
     """
   end
 
-  defp goal_completed?(%Goal{type: :boolean}, %GoalEntry{completed: true}), do: true
-
-  defp goal_completed?(%Goal{type: :numeric, numeric_target: target}, %GoalEntry{count: count})
-       when count >= target,
-       do: true
-
-  defp goal_completed?(_, _), do: false
-
   defp actions(%{goal: %{type: :boolean}} = assigns) do
     ~H"""
     <div>
@@ -298,4 +290,12 @@ defmodule TrackerWeb.DayLive.Show do
 
   defp maybe_goal_entry_id(nil), do: nil
   defp maybe_goal_entry_id(%GoalEntry{id: id}), do: id
+
+  defp goal_completed?(%Goal{type: :boolean}, %GoalEntry{completed: true}), do: true
+
+  defp goal_completed?(%Goal{type: :numeric, numeric_target: target}, %GoalEntry{count: count})
+       when count >= target,
+       do: true
+
+  defp goal_completed?(_, _), do: false
 end
