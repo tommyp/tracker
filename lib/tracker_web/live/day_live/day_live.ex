@@ -19,11 +19,38 @@ defmodule TrackerWeb.DayLive.Show do
   def render(assigns) do
     ~H"""
     <header>
+      <h1 class="mb-10 font-bold text-5xl text-center uppercase">Goals</h1>
+      <div class="top-4 right-4 absolute flex gap-x-4">
+        <.link class="p-1 text-zinc-600 hover:text-zinc-900" href={~p"/goals"}>
+          Manage goals
+        </.link>
+        <.link
+          class="flex gap-x-2 bg-white hover:bg-green-500 p-1 border border-green-500 rounded text-green-500 hover:text-white"
+          href={~p"/goals"}
+        >
+          New goal
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+        </.link>
+      </div>
+
       <div class="flex justify-between md:grid grid-cols-6 uppercase align-baseline">
         <.yesterday_button date={@date} />
 
-        <div class="col-span-4">
-          <h1 class="text-center">{DateHelpers.humanized!(@date)}</h1>
+        <div class="relative col-span-4">
+          <h1 class="p-1 text-center">{DateHelpers.humanized!(@date)}</h1>
         </div>
 
         <.tomorrow_button date={@date} />
