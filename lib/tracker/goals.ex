@@ -226,4 +226,12 @@ defmodule Tracker.Goals do
     )
     |> Repo.update_all([])
   end
+
+  def decrement_goal_entry_count(%GoalEntry{} = goal_entry) do
+    from(ge in GoalEntry,
+      update: [inc: [count: -1]],
+      where: ge.id == ^goal_entry.id
+    )
+    |> Repo.update_all([])
+  end
 end

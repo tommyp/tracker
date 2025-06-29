@@ -1,3 +1,5 @@
+require Logger
+
 defmodule TrackerWeb.DayLive.Show do
   alias Tracker.Goals.Goal
   alias Tracker.Goals.GoalEntry
@@ -36,7 +38,7 @@ defmodule TrackerWeb.DayLive.Show do
             goal_completed?(goal, entry) && "bg-zinc-100 opacity-70"
           ]}
         >
-          <p class="text-lg">{goal.description}</p>
+          <p class="text-lg">{goal.description} {entry && entry.count}</p>
           <.actions goal={goal} goal_entry={entry} />
         </li>
       </ul>
@@ -93,6 +95,8 @@ defmodule TrackerWeb.DayLive.Show do
     ~H"""
     <div>
       <.button
+        id={"decrement-#{@goal.id}"}
+        disabled={is_nil(@goal_entry)}
         phx-click="decrement"
         phx-value-goal-id={@goal.id}
         phx-value-goal-entry-id={maybe_goal_entry_id(@goal_entry)}
@@ -100,7 +104,7 @@ defmodule TrackerWeb.DayLive.Show do
         -
       </.button>
       <.button
-        id="increment"
+        id={"increment-#{@goal.id}"}
         phx-click="increment"
         phx-value-goal-id={@goal.id}
         phx-value-goal-entry-id={maybe_goal_entry_id(@goal_entry)}
@@ -211,6 +215,35 @@ defmodule TrackerWeb.DayLive.Show do
         entry = Goals.get_goal_entry!(id)
 
         Goals.increment_goal_entry_count(entry)
+    end
+
+    {:noreply, assign(socket, :goals_and_entries, Goals.list_goals_with_entries_for_date(date))}
+  end
+
+  def handle_event(
+        "decrement",
+        %{"goal-id" => goal_id} = params,
+        %{assigns: %{date: date}} = socket
+      ) do
+    goal = Goals.get_goal!(goal_id)
+
+    goal_entry_id = Map.get(params, "goal-entry-id")
+
+    case goal_entry_id do
+      nil ->
+        Goals.create_goal_entry(goal, %{count: 1, date: date})
+
+      id ->
+        entry = Goals.get_goal_entry!(id)
+
+        if entry.count == 1 do
+          case Goals.delete_goal_entry(entry) do
+            {:ok, _} -> nil
+            {:error, error} -> Logger.error(error)
+          end
+        else
+          Goals.decrement_goal_entry_count(entry)
+        end
     end
 
     {:noreply, assign(socket, :goals_and_entries, Goals.list_goals_with_entries_for_date(date))}
